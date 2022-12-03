@@ -6,14 +6,14 @@ import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDeZ5vF7KzxrfXJLFVCWTHruiXcLIsHtK0",
-  authDomain: "tallerfinal-5d612.firebaseapp.com",
-  projectId: "tallerfinal-5d612",
-  storageBucket: "tallerfinal-5d612.appspot.com",
-  messagingSenderId: "789800065816",
-  appId: "1:789800065816:web:8f8aaee9fdf99fa9405c6d"
-};
-
+    apiKey: "AIzaSyBjzY4E8WzCBQjWh4GJfxbK5Xr1lL5JKxI",
+    authDomain: "tallerfinal-firebase.firebaseapp.com",
+    projectId: "tallerfinal-firebase",
+    storageBucket: "tallerfinal-firebase.appspot.com",
+    messagingSenderId: "984718207869",
+    appId: "1:984718207869:web:284b5470d52be150363a14"
+  };
+  
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app)

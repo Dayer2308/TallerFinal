@@ -1,6 +1,6 @@
 import Formulario from './components/Formulario';
 import './App.css';
-import {bd} from '../src/firebase'
+
 
 function App() {
   return (
