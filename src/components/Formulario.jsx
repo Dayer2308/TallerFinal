@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { db } from '../firebase'
-import { collection, doc, addDoc, onSnapshot, query } from "firebase/firestore";
+import { collection, doc, addDoc, onSnapshot, query, deleteDoc} from "firebase/firestore";
+import { async } from "@firebase/util";
 
 const Formulario = (e) => {
   const [personajeUrl, setPersonajeUrl] = useState('')
@@ -16,7 +17,7 @@ const Formulario = (e) => {
   useEffect(() => {
     const obtenerDatos = async () => {
       try {
-        await onSnapshot(collection(db, 'Personajes_Anime'), (query) => {
+        await onSnapshot(collection(db,'Personajes_Anime'), (query) => {
           setListaPersona(query.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
         })
       } catch (error) {
@@ -28,6 +29,19 @@ const Formulario = (e) => {
     console.log(listaPersona)
 
   }, [])
+
+  const eliminar = async id =>{
+    try {
+      await deleteDoc(doc(db,'Personajes_Anime',id))
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+
+  const editar = item =>{
+
+  }
 
 
   const GuardarPersonaje = async (e) => {
@@ -90,14 +104,14 @@ const Formulario = (e) => {
                       <div className="col-md-8">
                         <div className="card-body">
                           <h5 className="card-title">{item.P_Nombre}</h5>
-                          <p className="card-text" >{item.P_Id}</p>
-                          <p className="card-text" >{item.P_Alias}</p>
-                          <p className="card-text" >{item.P_Edad}</p>
-                          <p className="card-text" >{item.P_Genero}</p>
-                          <p className="card-text" >{item.P_Poder}</p>
-                          <p className="card-text" >{item.P_Anime}</p>
-                          <button></button>
-                          <button></button>
+                          <p className="card-text" >ID: {item.P_Id}</p>
+                          <p className="card-text" >ALIAS: {item.P_Alias}</p>
+                          <p className="card-text" >EDAD: {item.P_Edad}</p>
+                          <p className="card-text" >GENERO: {item.P_Genero}</p>
+                          <p className="card-text" >PODER: {item.P_Poder}</p>
+                          <p className="card-text" >ANIME: {item.P_Anime}</p>
+                          <button className="btn btn danger btn-danger btn-sm fload-end mx-2" onClick ={()=>eliminar(item.id)}>Eliminar</button>
+                          <button className="btn btn warning btn-warning btn-sm fload-end mx-2" onClick={()=>editar(item)}>Editar</button>
                         </div>
                       </div>
                     </div>
