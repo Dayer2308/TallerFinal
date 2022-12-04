@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { db } from '../firebase'
-import { collection, doc, addDoc, onSnapshot, query, deleteDoc, updateDoc } from "firebase/firestore";
+import { collection, doc, addDoc, onSnapshot, deleteDoc, updateDoc } from "firebase/firestore";
 
 
 const Formulario = (e) => {
   const [personajeUrl, setPersonajeUrl] = useState('')
-  const [personajeId, setPersonajeId] = useState(0)
+  const [personajeId, setPersonajeId] = useState('')
   const [personajeNom, setPersonajeNom] = useState('')
   const [personajeAlias, setPersonajeAlias] = useState('')
   const [personajeEdad, setPersonajeEdad] = useState('')
@@ -29,7 +29,7 @@ const Formulario = (e) => {
     obtenerDatos();
     console.log(listaPersona)
 
-  }, [])
+  })
 
   const eliminar = async id => {
     try {
@@ -164,7 +164,7 @@ const Formulario = (e) => {
                   <div className="card mb-3">
                     <div className="row g-0">
                       <div className="col-md-4">
-                        <img src={item.P_Url} className="img-fluid rounded-start" />
+                        <img src={item.P_Url} className="img-fluid rounded-start" alt = "" />
                       </div>
                       <div className="col-md-8">
                         <div className="card-body">
