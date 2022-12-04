@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { db } from '../firebase'
-import { collection, doc, addDoc, onSnapshot, query, deleteDoc} from "firebase/firestore";
-import { async } from "@firebase/util";
+import { collection, doc, addDoc, onSnapshot, query, deleteDoc, updateDoc } from "firebase/firestore";
+
 
 const Formulario = (e) => {
   const [personajeUrl, setPersonajeUrl] = useState('')
@@ -12,12 +12,13 @@ const Formulario = (e) => {
   const [personajeGen, setPersonajeGen] = useState('')
   const [personajePod, setPersonajePod] = useState('')
   const [personajeAni, setPersonajeAni] = useState('')
+  const [modoEdicion, setModoEdicion] = useState(false)
   const [listaPersona, setListaPersona] = useState([])
 
   useEffect(() => {
     const obtenerDatos = async () => {
       try {
-        await onSnapshot(collection(db,'Personajes_Anime'), (query) => {
+        await onSnapshot(collection(db, 'Personajes_Anime'), (query) => {
           setListaPersona(query.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
         })
       } catch (error) {
@@ -30,19 +31,83 @@ const Formulario = (e) => {
 
   }, [])
 
-  const eliminar = async id =>{
+  const eliminar = async id => {
     try {
-      await deleteDoc(doc(db,'Personajes_Anime',id))
+      await deleteDoc(doc(db, 'Personajes_Anime', id))
     } catch (error) {
       console.log(error)
     }
 
   }
 
-  const editar = item =>{
+  const editar = item => {
+    setPersonajeUrl(item.P_Url)
+    setPersonajeId(item.P_Id)
+    setPersonajeNom(item.P_Nombre)
+    setPersonajeAlias(item.P_Alias)
+    setPersonajeEdad(item.P_Edad)
+    setPersonajeGen(item.P_Genero)
+    setPersonajePod(item.P_Poder)
+    setPersonajeAni(item.P_Anime)
+    setModoEdicion(true)
 
   }
 
+  const editarPersona = async e =>{
+    e.preventDefault()
+    try {
+      const docRef = doc(db,'Personajes_Anime',id);
+      await updateDoc(docRef,{
+        P_Url: personajeUrl,
+        P_Id: personajeId,
+        P_Nombre: personajeNom,
+        P_Alias: personajeAlias,
+        P_Edad: personajeEdad,
+        P_Genero: personajeGen,
+        P_Poder: personajePod,
+        P_Anime: personajeAni
+      })
+
+      const nuevoArray = listaPersona.map(
+        item => item.id === id ? {
+          P_Url: personajeUrl,
+          P_Id: personajeId,
+          P_Nombre: personajeNom,
+          P_Alias: personajeAlias,
+          P_Edad: personajeEdad,
+          P_Genero: personajeGen,
+          P_Poder: personajePod,
+          P_Anime: personajeAni
+        } : item
+      )
+
+      setListaPersona(nuevoArray)
+      setPersonajeUrl("")
+      setPersonajeId("")
+      setPersonajeNom("")
+      setPersonajeAlias("")
+      setPersonajeEdad("")
+      setPersonajeGen("")
+      setPersonajePod("")
+      setPersonajeAni("")
+      setModoEdicion(false)
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const cancelar = () =>{
+    setModoEdicion(false)
+    setPersonajeUrl("")
+    setPersonajeId("")
+    setPersonajeNom("")
+    setPersonajeAlias("")
+    setPersonajeEdad("")
+    setPersonajeGen("")
+    setPersonajePod("")
+    setPersonajeAni("")
+  }
 
   const GuardarPersonaje = async (e) => {
     e.preventDefault()
@@ -94,12 +159,12 @@ const Formulario = (e) => {
           <h4>LISTADO DE PERSONAJES</h4>
           <ul className="list-group">
             {
-              listaPersona.map(item =>(
+              listaPersona.map(item => (
                 <li className="list-group-item" key={item.id}>
                   <div className="card mb-3">
                     <div className="row g-0">
                       <div className="col-md-4">
-                        <img src={item.P_Url} className="img-fluid rounded-start"/>
+                        <img src={item.P_Url} className="img-fluid rounded-start" />
                       </div>
                       <div className="col-md-8">
                         <div className="card-body">
@@ -110,8 +175,8 @@ const Formulario = (e) => {
                           <p className="card-text" >GENERO: {item.P_Genero}</p>
                           <p className="card-text" >PODER: {item.P_Poder}</p>
                           <p className="card-text" >ANIME: {item.P_Anime}</p>
-                          <button className="btn btn danger btn-danger btn-sm fload-end mx-2" onClick ={()=>eliminar(item.id)}>Eliminar</button>
-                          <button className="btn btn warning btn-warning btn-sm fload-end mx-2" onClick={()=>editar(item)}>Editar</button>
+                          <button className="btn btn danger btn-danger btn-sm fload-end mx-2" onClick={() => eliminar(item.id)}>Eliminar</button>
+                          <button className="btn btn warning btn-warning btn-sm fload-end mx-2" onClick={() => editar(item)}>Editar</button>
                         </div>
                       </div>
                     </div>
@@ -122,8 +187,8 @@ const Formulario = (e) => {
           </ul>
         </div>
         <div className="col-4">
-          <h4 className="text-center">AGREGAR PERSONAJES</h4>
-          <form onSubmit={GuardarPersonaje}>
+          <h4 className="text-center">{modoEdicion ? 'EDITAR PERSONAJES' : 'AGREGAR PERSONAJES'}</h4>
+          <form onSubmit={ modoEdicion ? editarPersona : GuardarPersonaje}>
             <input
               type="text"
               className="form-control mb-2"
@@ -180,8 +245,18 @@ const Formulario = (e) => {
               value={personajeAni}
               onChange={(e) => setPersonajeAni(e.target.value)}
             />
-            <button className="btn btn-primary btn-block" on="submit">Agregar</button>
-            <button className="btn btn-dark btn-block mx-2">Cancelar</button>
+            {
+              modoEdicion ? (
+                <>
+                  <button className="btn btn-warning btn-block" on="submit">Editar</button>
+                  <button className="btn btn-dark btn-block mx-2" onClick={()=>cancelar()}>Cancelar</button>
+                </>
+              ) :
+
+              <button className="btn btn-primary btn-block" on="submit">Agregar</button>
+              
+            }
+
           </form>
         </div>
       </div>
