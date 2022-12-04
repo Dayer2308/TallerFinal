@@ -5,7 +5,7 @@ import { collection, doc, addDoc, onSnapshot, query, deleteDoc, updateDoc } from
 
 const Formulario = (e) => {
   const [personajeUrl, setPersonajeUrl] = useState('')
-  const [personajeId, setPersonajeId] = useState('')
+  const [personajeId, setPersonajeId] = useState(0)
   const [personajeNom, setPersonajeNom] = useState('')
   const [personajeAlias, setPersonajeAlias] = useState('')
   const [personajeEdad, setPersonajeEdad] = useState('')
@@ -56,7 +56,7 @@ const Formulario = (e) => {
   const editarPersona = async e =>{
     e.preventDefault()
     try {
-      const docRef = doc(db,'Personajes_Anime',id);
+      const docRef = doc(db,'Personajes_Anime');
       await updateDoc(docRef,{
         P_Url: personajeUrl,
         P_Id: personajeId,
@@ -69,7 +69,7 @@ const Formulario = (e) => {
       })
 
       const nuevoArray = listaPersona.map(
-        item => item.id === id ? {
+        item => item.id === personajeId ? {
           P_Url: personajeUrl,
           P_Id: personajeId,
           P_Nombre: personajeNom,
